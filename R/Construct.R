@@ -1,25 +1,3 @@
-# Check necessary packages ======================
-if (!requireNamespace("purrr")) {
-  message("purrr package will be installed.")
-  install.packages("purrr")
-}
-
-if (!requireNamespace("ggplot2")) {
-  message("ggplot2 package will be installed.")
-  install.packages("ggplot2")
-}
-
-if (!requireNamespace("ggforce")) {
-  message("ggforce package will be installed.")
-  install.packages("ggforce")
-}
-
-if (!requireNamespace("magrittr")) {
-  message("magrittr package will be installed.")
-  install.packages("ggforce")
-}
-
-
 # Initiate the class ============================
 #' An S4 class to represent multiple sets.
 #'
@@ -32,16 +10,16 @@ setClass("Venn",
 )
 
 
-# Method to create an instance ==================
-setGeneric("construct", function(sets) {
-  standardGeneric("construct")
+# New method to create an instance ==============
+setGeneric("Venn", function(sets) {
+  standardGeneric("Venn")
 }
 )
 
 #' @export
 #' @importFrom methods new
-#' @rdname construct
-setMethod("construct", c(sets = "ANY"),
+#' @rdname Venn
+setMethod("Venn", c(sets = "ANY"),
           function(sets) {
 
             if (!is.list(sets)) {
@@ -77,4 +55,3 @@ setMethod("construct", c(sets = "ANY"),
             venn
           }
 )
-

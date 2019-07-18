@@ -47,7 +47,7 @@ setMethod("unite", c(venn = "Venn", slice = "ANY"),
 # Method for difference =========================
 setGeneric("discern", function(venn,
                                slice1,
-                               slice2 = venn@names[!(venn@names %in% slice1)]) {
+                               slice2 = "all") {
   standardGeneric("discern")
 }
 )

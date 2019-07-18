@@ -18,7 +18,20 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-This tutorial shows how to use  `RVenn`, a package for dealing with multiple sets. The base R functions (`intersect`, `union` and `setdiff`) only work with two sets. `%>%` can be used from `magrittr` but, for many sets this can be tedious. `reduce` function from `purrr` package also provides a solution, which is the function that is used for set operations in this package. The functions `overlap`, `unite` and `discern` abstract away the details, so one can just `construct` the universe and choose the sets to operate by index or set name. Further, by using `ggvenn` Venn diagram can be drawn for 2-3 sets. As you can notice from the name of the function, `ggvenn` is based on `ggplot2`, so it is a neat way to show the relationship among a reduced number sets. For many sets, it is much better to use [UpSet](http://caleydo.org/tools/upset/) for visualization. Finally, by using `enrichment_test` function, the p-value of an overlap between two sets can be calculated. Here, the usage of all these functions will be shown.
+This tutorial shows how to use  `RVenn`, a package for dealing with multiple
+sets. The base R functions (`intersect`, `union` and `setdiff`) only work with
+two sets. `%>%` can be used from `magrittr` but, for many sets this can be
+tedious. `reduce` function from `purrr` package also provides a solution, which
+is the function that is used for set operations in this package. The functions
+`overlap`, `unite` and `discern` abstract away the details, so one can just
+construct the universe and choose the sets to operate by index or set name.
+Further, by using `ggvenn` Venn diagram can be drawn for 2-3 sets. As you can
+notice from the name of the function, `ggvenn` is based on `ggplot2`, so it is a
+neat way to show the relationship among a reduced number sets. For many sets, it
+is much better to use [UpSet](http://caleydo.org/tools/upset/) or `setmap`
+function provided within this package. Finally, by using `enrichment_test`
+function, the p-value of an overlap between two sets can be calculated. Here,
+the usage of all these functions will be shown.
 
 ## Creating toy data
 
@@ -33,14 +46,15 @@ library(ggplot2)
 
 ```{r}
 set.seed(42)
-toy = map(sample(5:25, replace = TRUE, size = 10), function(x) sample(letters, size = x))
+toy = map(sample(5:25, replace = TRUE, size = 10),
+          function(x) sample(letters, size = x))
 toy[1:3]  # First 3 of the sets.
 ```
 
 ### Construct the Venn object
 
 ```{r}
-toy = construct(toy)
+toy = Venn(toy)
 ```
 
 
@@ -64,6 +78,12 @@ overlap(toy, c("Set_1", "Set_2", "Set_5", "Set_8"))
 overlap(toy, c(1, 2, 5, 8))
 ```
 
+### Pairwise intersections
+
+```{r}
+overlap_pairs(toy, slice = 1:4)
+```
+
 ### Union
 
 Union of all sets:
@@ -82,6 +102,13 @@ unite(toy, c("Set_3", "Set_8"))
 unite(toy, c(3, 8))
 ```
 
+### Pairwise unions
+
+```{r}
+unite_pairs(toy, slice = 1:4)
+```
+
+
 ### Set difference
 
 ```{r}
@@ -96,7 +123,13 @@ discern(toy, "Set_1", "Set_8")
 discern(toy, c(3, 4), c(7, 8))
 ```
 
-## Draw the Venn Diagram
+### Pairwise differences
+
+```{r}
+discern_pairs(toy, slice = 1:4)
+```
+
+## Venn Diagram
 
 For two sets:
 
@@ -109,6 +142,19 @@ For three sets:
 ```{r, fig.height=8, fig.width=8, fig.retina=3}
 ggvenn(toy, slice = c(3, 6, 8))
 ```
+
+## Heatmap
+
+```{r, fig.height=8, fig.width=8, fig.retina=3}
+setmap(toy)
+```
+
+Without clustering
+
+```{r, fig.height=8, fig.width=8, fig.retina=3}
+setmap(toy, element_clustering = FALSE, set_clustering = FALSE)
+```
+
 
 ## Enrichment test
 
@@ -126,5 +172,10 @@ qplot(er$Overlap_Counts, geom = "blank") +
   scale_y_continuous(name = "Frequency")
 ```
 
-The test above, of course, is not very meaningful as we randomly created the sets; therefore, we get a high p-value. However, when you are working with actual data, e.g. to check if a motif is enriched in the promoter regions of the genes in a gene set, you can use this test. In that case, `set1` will be the gene set of interest, `set2` will be the all the genes that the motif is found in the genome and `univ` will be all the genes of a genome.
+The test above, of course, is not very meaningful as we randomly created the
+sets; therefore, we get a high p-value. However, when you are working with
+actual data, e.g. to check if a motif is enriched in the promoter regions of the
+genes in a gene set, you can use this test. In that case, `set1` will be the
+gene set of interest, `set2` will be the all the genes that the motif is found
+in the genome and `univ` will be all the genes of a genome.
 
